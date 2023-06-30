@@ -28,7 +28,7 @@ nolayer = 5;
 % xr = 0.58;    % 中心距
 
 % %% ------------------ 横向约束反演 --------------------------------
-% {
+%{
 parameter_settings = [nt; nolayer; ns; t_st; t_ed]; % 输入程序的参数
 
 save('parameter_settings.txt','parameter_settings','-ascii')
