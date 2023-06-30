@@ -6,14 +6,16 @@ dbstop if error
 %% ---------------------- 参数设置 ----------------------------------
 
 %% 数据预处理的参数
-pset = [1:17];  % 测点的坐标，文件夹的名称
+pset = 1+[0:5, 5.5:0.5:9, 10:23];  % 测点的坐标，文件夹的名称
+delta_pset = 1;            % 测点之间的距离 （m）
 
 
 %% 反演参数
 ns = length(pset);                  % 测点的个数
 nt = 56;                        % 抽道时间
-t_st = 2.022e-3;           % 起始时间        
+t_st = 2.02e-3; % 2.156e-3;           % 起始时间        
 t_ed = 20e-3;       % 结束时间 
+
 nolayer = 5;
 
 
@@ -42,8 +44,4 @@ copyfile('point4set.txt', path_code1)
 % 
 copyfile('rho_pro_tunnel_single.txt',path_code1)  
 copyfile('dep_pro_tunnel_single.txt',path_code1)  
-
-% copyfile('D:\xys\瞬时电磁探测的代码\exp_nanjing_hengxiang\bin\Release\exp_nanjing_hengxiang.exe',path_code1)
-% winopen('D:\xys\瞬时电磁探测的代码\exp_nanjing_hengxiang\exp_nanjing_hengxiang.exe')
-
 

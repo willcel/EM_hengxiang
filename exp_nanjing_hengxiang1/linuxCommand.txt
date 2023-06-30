@@ -1,0 +1,7 @@
+cd /mnt/c/users/amax/desktop/EM_hengxiang/exp_nanjing_hengxiang1
+
+before use linux. dos2unix * convert
+
+mpif90 -o hx_parel main_hengxiang_parel.f90 && mpirun -n 28 hx_parel
+
+mpif90 -o hx_serial main_hengxiang_serial.f90 && mpirun -n 1 hx_serial

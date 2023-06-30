@@ -23,7 +23,7 @@ b = npara;
 coef = 1;
 bindarr = ones(a,b) * coef; % coef是全局加的约束，这里定1.5
 
-% {
+%{
 ! 06022
 ! 请用fortran语法写
 ! 结构4-8不约束，需要从3-4开始到8-9
@@ -39,6 +39,16 @@ bindarr(4:7,1:5) = coef
 
 ! 结构12的阻值不约束
 bindarr(11:12,4)
+%}
+
+% {
+! 0628/cexian2
+! 请用fortran语法写
+! 结构8-12不约束，需要从7-8开始到12-13
+coef = 1.5 ! 横向约束的系数
+bindarr = coef
+bindarr(7:12,:) = 0.001
+
 %}
 
 show = bindarr';

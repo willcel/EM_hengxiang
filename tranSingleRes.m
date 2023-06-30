@@ -1,15 +1,16 @@
 clear
 % close all
 dbstop if error
-pset = 1:17;
-% delta_pset = 1;            % 
+pset = 1+[0:5, 5.5:0.5:9, 10:23];  % 测点的坐标，文件夹的名称
+delta_pset = 1;
+
 ns = length(pset);               
 nolayer = 5;                  % 
 total_depth = 25;           % 
 no_para = 2 * nolayer -1;
 
 
-load('D:\0602测线1单点反演结果\仿真结果06021\a06021_0614v2.mat')
+load('D:\0628五棵松相关\测线2\测线2EM_singleBP\selectAns_06280630v1.mat')
 a = selectAns;
 
     %% 调整分区
@@ -114,19 +115,17 @@ save('dep_pro_tunnel_single.txt','dep_pro1','-ascii')
     y = 0:dy:total_depth-dy;
     
     mat(mat==1)=NaN;
-    p2 = 1:ns;
+
 
     % ---- 为了pcolor画出最后一个测点 ---------
-    p2 = [p2, ns+1];
-    mat = [mat;zeros(1,total_depth*scale_factor)];
-%     mat(18,:) = mat(17,:); % interp补一位
-    % ---------------------------------------
+    xdraw_range = [pset, pset(end)+1]; mat = [mat;zeros(1,total_depth*scale_factor)];
 
-%     figure('Position',[200 200 900 600])
-    figure('Position',[521	213.666666666667	784	625.333333333333]) 
-    h=pcolor(0.5*(p2-min(p2)), y, log10(mat'));
+    % ---------------------------------------
+    figure(Position=[383.666666666667	189.666666666667	1646	800.666666666667]) 
+
+    h=pcolor(delta_pset*(xdraw_range - min(xdraw_range)),y,log10(mat'))
+    shading flat
     % h.EdgeColor = 'none';
-    shading flat%
 %     shading interp
 %     xlim([0 8])
     colormap jet
@@ -140,15 +139,16 @@ save('dep_pro_tunnel_single.txt','dep_pro1','-ascii')
     set(gca,'ydir','reverse')
 
     for i = 1:ns
-        text(i*0.5-0.25, 2, num2str(i), ...
-        'HorizontalAlignment', 'center', ...
-        'VerticalAlignment', 'bottom', 'FontSize', 12);
+        %     scatter(i-0.25,1,'^')
+                text(xdraw_range(i)-delta_pset*0.5, 3, num2str(i), ...
+                'HorizontalAlignment', 'center', ...
+                'VerticalAlignment', 'bottom', 'FontSize', 12);
     end
     
     for i = 1:ns
         hold on
         for k = 1:4
-            plot(0.5*[i-1 i], [depthSeparate(i,k) depthSeparate(i,k)], 'r', 'LineWidth', 1)
+            plot([xdraw_range(i) xdraw_range(i+1)]-1, [depthSeparate(i,k) depthSeparate(i,k)], 'r', 'LineWidth', 1)
         end
         hold off
     end
