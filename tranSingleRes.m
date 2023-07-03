@@ -1,7 +1,7 @@
-clear
+% clear
 % close all
 dbstop if error
-pset = 1+[0:5, 5.5:0.5:9, 10:23];  % 测点的坐标，文件夹的名称
+% pset = 1+[0:5, 5.5:0.5:9, 10:23];  % 测点的坐标，文件夹的名称
 delta_pset = 1;
 
 ns = length(pset);               
@@ -10,7 +10,7 @@ total_depth = 25;           %
 no_para = 2 * nolayer -1;
 
 
-load('D:\0628五棵松相关\测线2\测线2EM_singleBP\selectAns_06280630v1.mat')
+load('D:\0628五棵松相关\测线1-0629\EM_singleBP\selectAns.mat')
 a = selectAns;
 
     %% 调整分区

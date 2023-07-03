@@ -49,6 +49,12 @@ coef = 1.5 ! 横向约束的系数
 bindarr = coef
 bindarr(7:12,:) = 0.001
 
+! 0629/cexian1
+! 请用fortran语法写
+! 结构3-6不约束，需要从2-3开始到6-7
+coef = 1.5 ! 横向约束的系数
+bindarr = coef
+bindarr(2:6,:) = 0.001
 %}
 
 show = bindarr';

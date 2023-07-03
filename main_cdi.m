@@ -1,12 +1,12 @@
 %%
 clc
-clear
+% clear
 close all
 dbstop if error
 %% ---------------------- 参数设置 ----------------------------------
 
 %% 数据预处理的参数
-pset = 1+[0:5, 5.5:0.5:9, 10:23];  % 测点的坐标，文件夹的名称
+% pset = 1+[0:5, 5.5:0.5:9, 10:23];  % 测点的坐标，文件夹的名称
 delta_pset = 1;            % 测点之间的距离 （m）
 
 
@@ -28,7 +28,7 @@ nolayer = 5;
 % xr = 0.58;    % 中心距
 
 % %% ------------------ 横向约束反演 --------------------------------
-%{
+% {
 parameter_settings = [nt; nolayer; ns; t_st; t_ed]; % 输入程序的参数
 
 save('parameter_settings.txt','parameter_settings','-ascii')
