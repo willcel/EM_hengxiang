@@ -1,5 +1,5 @@
 
-pset = 1+[0:5, 5.5:0.5:9, 10:23];  % 测点的坐标，文件夹的名称
+% pset = 1+[0:5, 5.5:0.5:9, 10:23];  % 测点的坐标，文件夹的名称
 delta_pset = 1;            % 测点之间的距离 （m）
 ns = length(pset);
 total_depth = 25; 
@@ -7,8 +7,8 @@ nolayer = 5;
 
 
 
-folder2 = "D:\0628五棵松相关\测线2\EM_hengxiang\exp_nanjing_hengxiang1";
-savefold = 'D:\0628五棵松相关\测线2\EM_hengxiang\plot\处理结果\0630v1-1.5';
+folder2 = "D:\0628五棵松相关\测线1-0629\EM_hengxiang\plot";
+savefold = 'D:\0628五棵松相关\测线1-0629\EM_hengxiang\plot\处理结果\0703v1-1.5';
 
 mkdir(savefold)
 cd(savefold)
@@ -50,7 +50,7 @@ end
 
 save( fullfile(savefold,'res.mat'), "para")
 copyfile( fullfile(folder2,'res2d.dat'), fullfile(savefold,'res2d.dat'))
-copyfile( fullfile(folder2,'log.dat'), fullfile(savefold,'log.dat'))
+% copyfile( fullfile(folder2,'log.dat'), fullfile(savefold,'log.dat'))
 
 %%
 j=1;

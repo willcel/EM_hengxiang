@@ -7,11 +7,11 @@ a = selectAns_Hengxiang;
 %% 定义一下基本结构
 % 隧道结构
 % 起步和终止测点
-tar_st = 8;
-tar_ed = 12;
+tar_st = 3;
+tar_ed = 6;
 
 % 顶点位置
-tar_mid = 10;
+tar_mid = 5;
 
 % 目标层数
 tar_lay = 4;

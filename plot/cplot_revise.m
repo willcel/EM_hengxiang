@@ -1,9 +1,9 @@
 % % 瀹炴祴鏁版嵁鐨勪綔鍥?
 % % function [] = myplot4(ns, nolayer, pset, total_depth, delta_pset)
-clear
+% clear
 % close all
 dbstop if error
-pset = 1+[0:5, 5.5:0.5:9, 10:23];  % 测点的坐标，文件夹的名称
+% pset = 1+[0:5, 5.5:0.5:9, 10:23];  % 测点的坐标，文件夹的名称
 delta_pset = 1;               % 娴嬬偣涔嬮棿鐨勮窛绂? 锛坢锛?
 ns = length(pset);                  % 娴嬬偣鐨勪釜鏁?
 nolayer = 5;                  % 鍒掑垎鐨勫眰鏁?
@@ -13,7 +13,7 @@ no_para = 2 * nolayer -1;
 
 %%
 interpPlot = 0;
-filefolder = '.\处理结果\0630v1-1.5';
+filefolder = '.\处理结果\0703v1-1.5';
 savename ='.\selectAns_Hengxiang.mat';
 
 saveRawName = '.\raw.tif';
@@ -32,7 +32,7 @@ iterA = floor(line / ns);
 fclose(fileid)
 
 
-ii = 3;
+ii = 16;
 indLine = (1:ns) + (ii-1)*ns;
 a = res4(indLine, :);
 
@@ -88,7 +88,7 @@ for x = 1:ns
                 mat(x,y)=a(max(1,round(x)), nolayer);
                 
             end
-            
+                
         end
     end
     
@@ -98,7 +98,7 @@ end
 dy = 1/scale_factor;
 y = 0:dy:total_depth-dy;
 %%
-% writetxt(mat','.\0628测线2.txt')
+% writetxt(mat','.\0629测线1.txt')
 
 xdraw_range = [pset, pset(end)+1]; mat = [mat;zeros(1,total_depth*scale_factor)];
 
