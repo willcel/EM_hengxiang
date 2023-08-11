@@ -6,16 +6,18 @@ total_depth = 25;
 nolayer = 5;
 
 
-
-folder2 = "D:\0628五棵松相关\测线1-0629\EM_hengxiang\plot";
-savefold = 'D:\0628五棵松相关\测线1-0629\EM_hengxiang\plot\处理结果\0703v1-1.5';
+folderbase = 'D:\willcel\测线4-0629\EM_hengxiang\';
+folder2 = fullfile(folderbase, 'plot');
+savefold = fullfile(folderbase, 'plot\0811v1-1.5');
 
 mkdir(savefold)
 cd(savefold)
 %
+rawfileid = fullfile(folderbase, '\exp_nanjing_hengxiang\res2d.dat');
 fileid = fullfile(folder2, 'res2d.dat');
-
+copyfile(rawfileid, fileid)
 data = textread(fileid, '%s', 'delimiter', '\n');
+%%
 %{
 % 涓嶆厧璁板綍涓烘瘡琛?13涓?鏁板瓧锛屽疄闄呭簲璇ヤ??9涓?鍙傛暟锛?17*9
 groupFinish = floor(length(data) / 12); 
@@ -108,7 +110,7 @@ for ii = 1:groupFinish
     xdraw_range = [pset, pset(end)+1]; mat = [mat;zeros(1,total_depth*scale_factor)];
 
     close all
-    figure('Position',[200 200 1500 800])
+    figure('Position',[10 10 1200 600])
     pcolor(delta_pset*(xdraw_range - min(xdraw_range)),y,log10(mat'))
     
     shading flat%interp
@@ -123,8 +125,15 @@ for ii = 1:groupFinish
     set(gca,'ydir','reverse')
     title(sprintf('Iter %.0f', ii))
 
+    for i = 1:ns
+        % 追求标号的准确性
+        if(i<ns) interval = xdraw_range(i+1)-xdraw_range(i); end
 
+        text(xdraw_range(i)-1 + 0.5*interval, 2, num2str(i), ...
+        'HorizontalAlignment', 'center', ...
+        'VerticalAlignment', 'bottom', 'FontSize', 12);
+    end
     saveas(gcf, fullfile(savefold,[num2str(ii),'.tif']) )
 end
 
-% cplot_err
+cplot_err

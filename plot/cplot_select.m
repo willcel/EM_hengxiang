@@ -13,7 +13,7 @@ no_para = 2 * nolayer -1;
 
 %%
 interpPlot = 0;
-filefolder = '.\处理结果\0703v1-1.5';
+filefolder = savefold;
 savename ='.\selectAns_Hengxiang.mat';
 
 saveRawName = '.\raw.tif';
@@ -32,7 +32,7 @@ iterA = floor(line / ns);
 fclose(fileid)
 
 
-ii = 16;
+ii = 1;
 indLine = (1:ns) + (ii-1)*ns;
 a = res4(indLine, :);
 
@@ -103,7 +103,7 @@ y = 0:dy:total_depth-dy;
 xdraw_range = [pset, pset(end)+1]; mat = [mat;zeros(1,total_depth*scale_factor)];
 
 close all
-figure('Position',[200 200 1500 800])
+figure('Position',[10 10 1200 600])
 pcolor(delta_pset*(xdraw_range - min(xdraw_range)),y,log10(mat'))
     
 if interpPlot == 0
@@ -123,7 +123,14 @@ set(get(h,'title'),'string','log10(\rho)');
 set(gca,'FontSize',18,'FontWeight','bold')
 caxis([-4,2])
 set(gca,'ydir','reverse')
+    for i = 1:ns
+        % 追求标号的准确性
+        if(i<ns) interval = xdraw_range(i+1)-xdraw_range(i); end
 
+        text(xdraw_range(i)-1 + 0.5*interval, 2, num2str(i), ...
+        'HorizontalAlignment', 'center', ...
+        'VerticalAlignment', 'bottom', 'FontSize', 12);
+    end
 %{
 for i = 1:ns
     text(i*0.5-0.25, 2, num2str(i), ...

@@ -6,7 +6,7 @@ dbstop if error
 %% ---------------------- 参数设置 ----------------------------------
 
 %% 数据预处理的参数
-% pset = 1+[0:5, 5.5:0.5:9, 10:23];  % 测点的坐标，文件夹的名称
+
 delta_pset = 1;            % 测点之间的距离 （m）
 
 
@@ -26,6 +26,14 @@ nolayer = 5;
 % rr = 0.25;               % 接收线圈的半径 m
 % nturn1 = 20;          % 接收线 圈的匝数
 % xr = 0.58;    % 中心距
+
+%% 电流、电压数据拷贝过来
+rawfolder = 'D:\willcel\测线4-0629\EM_singleBP';
+copyfile(fullfile(rawfolder, 'vobs_20ms.txt'), '.\')
+copyfile(fullfile(rawfolder, 'point1set.txt'), '.\')
+copyfile(fullfile(rawfolder, 'point2set.txt'), '.\')
+copyfile(fullfile(rawfolder, 'point3set.txt'), '.\')
+copyfile(fullfile(rawfolder, 'point4set.txt'), '.\')
 
 % %% ------------------ 横向约束反演 --------------------------------
 % {

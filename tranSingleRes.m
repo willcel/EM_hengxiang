@@ -10,7 +10,7 @@ total_depth = 25;           %
 no_para = 2 * nolayer -1;
 
 
-load('D:\0628五棵松相关\测线1-0629\EM_singleBP\selectAns.mat')
+load('D:\willcel\测线4-0629\EM_singleBP\selectAns.mat')
 a = selectAns;
 
     %% 调整分区
@@ -121,7 +121,7 @@ save('dep_pro_tunnel_single.txt','dep_pro1','-ascii')
     xdraw_range = [pset, pset(end)+1]; mat = [mat;zeros(1,total_depth*scale_factor)];
 
     % ---------------------------------------
-    figure(Position=[383.666666666667	189.666666666667	1646	800.666666666667]) 
+    figure(Position=[83.666666666667	89.666666666667	1046	600.666666666667]) 
 
     h=pcolor(delta_pset*(xdraw_range - min(xdraw_range)),y,log10(mat'))
     shading flat

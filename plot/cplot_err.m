@@ -1,7 +1,8 @@
 
 %%
-fileid = fullfile(folder2, 'log.dat');
-fileid = fopen( fileid );
+rawfileid = fullfile(folderbase, '\exp_nanjing_hengxiang\log.dat');
+% fileid = fullfile(folder2, 'log.dat');
+fileid = fopen( rawfileid );
 
 error1 = [];
 error2 = [];
