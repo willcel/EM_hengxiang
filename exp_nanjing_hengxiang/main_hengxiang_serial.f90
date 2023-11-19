@@ -47,7 +47,7 @@
     integer:: counter,i,j,k  ! index
     integer:: tot_para,tot_ntc
     integer:: size0,size1,size2
-    integer:: l,ka
+    integer:: l,ka,nturn1,nturn11
     integer:: stp, enp
 
     REAL :: coef
@@ -57,7 +57,8 @@
 
     real *8,allocatable:: rho_pro(:), hh_pro(:)
 
-    real *8 temp0(1,1),pi,htt,t_st,t_ed,para1,para2,para3,para4,para5
+    real *8 temp0(1,1),pi,htt,t_st,t_ed, xr1, hr1, rt1, rr1
+    real *8 para1,para2,para3,para4,para5,para6,para7
 
     real *8 rerror,rerror_pre,lam,epsi,eps
 
@@ -73,34 +74,30 @@
     real *8,allocatable::deltaRp(:,:),deltaRd(:,:)
     real *8,allocatable::Wp(:,:), Wd(:,:),Rp(:,:),Rd(:,:)
     real *8,allocatable::s(:),e(:),work(:),u(:,:),v(:,:)
-
+    real *8,allocatable:: deltaVobs(:,:), phi(:,:), rel(:,:)
+    real *8 :: phiMax
 
     real *8,allocatable:: point1set(:), point2set(:), point3set(:), point4set(:),ht(:)
     integer :: iTimes1, iTimes2, iTimes3, iTimes4, rate
-Data pi/3.1415926D0/
+    Data pi/3.1415926D0/
     Common /this_is_note/zetaStep
     
     CALL system_clock(count_rate=rate)
     call SYSTEM_CLOCK(iTimes1)
     open (33, File='time_record.dat', status='unknown')
-
-    
-
     open(1, file='parameter_settings.txt', status='old')
 
-    read(1,*)para1,para2,para3,t_st,t_ed
+    read(1,*)para1,para2,para3,t_st,t_ed, xr1, hr1, rt1, rr1,para6,para7
+
 
     ntc = floor(para1)
     nolayer = floor(para2)
     ns = floor(para3)
-    ! stp = floor(para4)
-    ! enp = floor(para5)
-
+    nturn1 = floor(para6)
+    nturn11 = floor(para7)
 
 
     npara = 2*nolayer-1 ! 13
-
-
 
     epsi=1.d-30
     tot_para = npara*ns   ! 442
@@ -138,7 +135,7 @@ Data pi/3.1415926D0/
 
 
     allocate(point1set(ns*2), point2set(ns*2), point3set(ns*2), point4set(ns*2),ht(ns))
-
+    allocate(deltaVobs(ntc,1), phi(ns-1,1), rel(ns-1,1))
 
 
     ! print*,"size0 = ",size0
@@ -162,7 +159,6 @@ Data pi/3.1415926D0/
 
     Open (14, File='rho_pro_tunnel_single.txt', Status='old')
     Open (15, File='dep_pro_tunnel_single.txt', Status='old')
-
 
     ! Open (16, File='ht.txt', Status='old')
 
@@ -197,22 +193,29 @@ Data pi/3.1415926D0/
     write(7,*)'observation data:'
     write(7,10)Vobs
 
-    ! 横向约束的系数
-    coef = 1.5   ! 1.0 ! 横向约束的系数
-    ! 06022
-    ! 请用fortran语法写
-    ! 结构4-8不约束，需要从3-4开始到8-9
-    bindarr = coef
-    bindarr(3:8,:) = 0.001
-
-    ! 结构1-3的第四层的阻值不约束
-    bindarr(1:2,4) = 0.001
-
-    ! 隧道结构体内部的阻值可以约束，埋深不变而已
-    bindarr(4:7,1:5) = coef
+    do k=1,ns-1
+        do i = 1,ntc
+            deltaVobs(i,1) = Vobs(i+(k-1)*ntc,1) - Vobs(i+k*ntc,1)
+        end do
+        temp0 = sqrt(matmul(transpose(deltaVobs),deltaVobs))
+        phi(k,1) = 1 / temp0(1,1)
+    end do
     
-    ! 结构12的阻值不约束
-    bindarr(11:12,4) = 0.001
+    phiMax = MAXVAL(phi)
+
+    ! 横向约束的系数
+    coef = 0.001   ! 1.0 ! 横向约束的系数
+
+    do k=1,ns-1
+        rel(k,1) = phi(k,1) / phiMax
+        bindarr(k,:) = rel(k,1) * coef;
+    end do
+    write(7,*)'rel data:'
+    write(7,*)rel
+    ! print*, rel
+    ! ! print*, phiMax
+    ! print*, "hello"
+
 
     Wp = 0
     DO a = 1, ns-1
@@ -243,8 +246,8 @@ Data pi/3.1415926D0/
     rerror_pre = 1.d8
     rerror = rerror_pre
 
-101 Continue
-  call SYSTEM_CLOCK(iTimes2)
+    101 Continue
+    call SYSTEM_CLOCK(iTimes2)
     ! 单位矩阵
     !************************ 更新阻尼因子 ********************************
     EYE = 0.d0
@@ -271,13 +274,11 @@ Data pi/3.1415926D0/
     counter = counter+1
     jacobi = 0.d0
 
-
-
     !*************************** 计算正演结果 *******************************
     Write(7,*)'calculate dB/dt in time domain ...'
     do k=1,ns
 
-        htt = 0.01
+        htt = hr1
 
         if(counter .eq. 1)then
             do i=1,nolayer
@@ -301,7 +302,8 @@ Data pi/3.1415926D0/
             end do
         end if
 
-        call forwardprocess(rho_iter,hh_iter,hz1_iter,nolayer,ntc,time,k,point1set,point2set,point3set,point4set,htt,ns,t_st,t_ed)
+        call forwardprocess(rho_iter,hh_iter,hz1_iter,nolayer,ntc,time,k,&
+        point1set,point2set,point3set,point4set,htt,ns,t_st,t_ed,xr1, hr1,rt1, rr1,nturn1,nturn11)
 
 
         ! 当前时刻的参数：电导率
@@ -322,7 +324,8 @@ Data pi/3.1415926D0/
 
         ! 计算雅可比矩阵
         Write(7,*)'calculate Jacobi matrix ...'
-        call cal_jacobi(rho_iter, hh_iter,jacobi1, nolayer, ntc, k, point1set, point2set, point3set, point4set,htt,ns,t_st,t_ed)
+        call cal_jacobi(rho_iter, hh_iter,jacobi1, nolayer, ntc, k,&
+         point1set, point2set, point3set, point4set,htt,ns,t_st,t_ed,xr1, hr1,rt1, rr1,nturn1,nturn11)
 
         ! 总的雅可比矩阵
 
@@ -345,7 +348,7 @@ Data pi/3.1415926D0/
 
     Write(7,*)'done!'
 
-    Write(16,20)dexp(m_pre)
+    Write(16,*)dexp(m_pre)
 
     Write(7,*)'calculate Rp and Rd ...'
 
@@ -957,15 +960,16 @@ Data pi/3.1415926D0/
 
 
 
-    subroutine cal_jacobi(m1, m2, jac, nlayer, ntc0,ns_id1,p11,p21,p31,p41,htt1,ns_real1,t_st1,t_ed1)
-    integer:: i,j,no,ntc0,ns_id1,ns_real1, zetaStep
+    subroutine cal_jacobi(m1,m2,jac,nlayer,ntc0,ns_id1,p11,p21,p31,p41,htt1,ns_real1,t_st1,t_ed1,xr1,hr1,rt1,rr1,nturn1,nturn11)
+    integer:: i,j,no,ntc0,ns_id1,ns_real1,nturn1,nturn11, zetaStep
     real *8 htt1
     Real *8 m1(nlayer), m2(nlayer), zeta(zetaStep), delta,jac1(ntc0)
     real *8 jac(ntc0,2*nlayer-1) ! 注意是包括磁导率的总参数数目
+    Real *8 t_st1,t_ed1,xr1, hr1,rt1, rr1
     real *8,allocatable::time1(:)
 
-    real *8 p11(ns_real1*2), p21(ns_real1*2), p31(ns_real1*2), p41(ns_real1*2),t_st1,t_ed1
-Common /this_is_note/zetaStep
+    real *8 p11(ns_real1*2), p21(ns_real1*2), p31(ns_real1*2), p41(ns_real1*2)
+    Common /this_is_note/zetaStep
     no = 2*nlayer-1 ! 9
     allocate(time1(ntc0))
 
@@ -977,23 +981,26 @@ Common /this_is_note/zetaStep
 
     do j=1,no
         jac1 = 0.d0
-        call cal_diff(m1, m2, zeta, delta, j, jac1, nlayer,ntc0,ns_id1,p11,p21,p31,p41,htt1,ns_real1,t_st1,t_ed1)
+        call cal_diff(m1,m2,zeta,delta,j,jac1,nlayer,ntc0,ns_id1,p11,p21,p31,p41,htt1,ns_real1,&
+        & t_st1,t_ed1,xr1,hr1,rt1,rr1,nturn1,nturn11)
         do i=1,ntc0
             jac(i,j)=jac1(i)
         end do
     end do
     end subroutine cal_jacobi
 
-    subroutine cal_diff(rhoo, hhh, zeta1, del, jth, temp, nlayer,ntc1,ns_id,p1,p2,p3,p4,htt2,ns_real2,t_st2,t_ed2)
+    subroutine cal_diff(rhoo, hhh, zeta1, del, jth, temp, nlayer,ntc1,ns_id,p1,p2,p3,p4,htt2,ns_real2,&
+        & t_st2,t_ed2,xr1, hr1,rt1, rr1,nturn1,nturn11)
 
-    integer:: i,k,jth,ntc1, ns_id,ns_real2, zetaStep
+    integer:: i,k,jth,ntc1, ns_id,ns_real2,nturn1,nturn11, zetaStep
     Real *8 zeta1(zetaStep),del, rhoo(nlayer), hhh(nlayer), temp(ntc1),htt2
     Real *8 rhonew1(nlayer), hhnew1(nlayer), rhonew2(nlayer), hhnew2(nlayer)
 
     Real *8,allocatable:: hzz1(:),hzz11(:), time0(:)
 
-    real *8 p1(ns_real2*2), p2(ns_real2*2), p3(ns_real2*2), p4(ns_real2*2),t_st2,t_ed2
-Common /this_is_note/zetaStep
+    real *8 p1(ns_real2*2), p2(ns_real2*2), p3(ns_real2*2), p4(ns_real2*2)
+    Real *8 t_st2,t_ed2,xr1, hr1,rt1, rr1
+    Common /this_is_note/zetaStep
 
     allocate(hzz1(ntc1))
     allocate(hzz11(ntc1), time0(ntc1))
@@ -1017,8 +1024,11 @@ Common /this_is_note/zetaStep
             hhnew2(jth-nlayer) = dexp(dlog(hhh(jth-nlayer))-zeta1(i)*del)
         endif
 
-        call forwardprocess(rhonew1, hhnew1, hzz1, nlayer,ntc1,time0,ns_id,p1,p2,p3,p4,htt2,ns_real2,t_st2,t_ed2)
-        call forwardprocess(rhonew2, hhnew2, hzz11, nlayer,ntc1,time0,ns_id,p1,p2,p3,p4,htt2,ns_real2,t_st2,t_ed2)
+        call forwardprocess(rhonew1, hhnew1, hzz1, nlayer,ntc1,time0,ns_id,p1,p2,p3,p4,htt2,&
+        &ns_real2,t_st2,t_ed2,xr1, hr1,rt1, rr1,nturn1,nturn11)
+        call forwardprocess(rhonew2, hhnew2, hzz11, nlayer,ntc1,time0,ns_id,p1,p2,p3,p4,htt2,&
+        & ns_real2,t_st2,t_ed2,xr1, hr1,rt1, rr1,nturn1,nturn11)
+
         do k=1,ntc1
             temp(k)=temp(k)+(hzz1(k)-hzz11(k))*1.d0/2/zetaStep/zeta1(i)/del
         end do
@@ -1029,7 +1039,7 @@ Common /this_is_note/zetaStep
 
 
 
-    Subroutine forwardprocess(rho, hh, hz1, nlayer,nt,t,ns_id,p1,p2,p3,p4,ht,ns1,t_st,t_ed)
+    Subroutine forwardprocess(rho, hh, hz1, nlayer,nt,t,ns_id,p1,p2,p3,p4,ht,ns1,t_st,t_ed,xr, hr,rt, rr,nturn,nturn1)
     integer::nlayer, nt, npls, ns_id, ns1
     Real *8 t_st,t_ed, delta_t
     Real *8 t(nt), hz1(nt),tlog(nt)
@@ -1046,8 +1056,6 @@ Common /this_is_note/zetaStep
 
     real *8  rt, rr
     integer::nturn, nturn1
-
-
     Complex *16 func(5, 67)
 
     Data pi/3.1415926D0/
@@ -1144,15 +1152,9 @@ Common /this_is_note/zetaStep
     Call filter
     !**************************************************************
 
-    !**************************************************************
-    ! 发射线圈
-    rt = 0.5             ! 线圈的半径
-    nturn = 3.           ! 线圈的匝数
-    rr = 0.25            ! 半径
-    nturn1 = 20          ! 接收线圈的匝数
-    ! ht函数输入0.01, 默认xt=yt=0
-    hr = 0.01
-    xr = 0.58            ! 中心距
+    !hr = 0.01
+
+    !xr = 0.58
     yr = 0.
 
     zplus = ht - hr
@@ -1160,17 +1162,15 @@ Common /this_is_note/zetaStep
     r = dsqrt(xr*xr+yr*yr)
     rplus = dsqrt(r*r+zplus*zplus)
 
-
+    !**************************************************************
     npls = 1
 
     delta_t = (dlog10(t_ed)-dlog10(t_st))/(nt-1)
-
 
     do i=1,nt
         tlog(i)=dlog10(t_st)+(i-1)*delta_t
         t(i)=10**tlog(i)
     end do
-
 
     ic = 3
 
@@ -1192,7 +1192,7 @@ Common /this_is_note/zetaStep
 
     End If
 
-Do i = 1, nfrq
+    Do i = 1, nfrq
         Call forward(rho, hh, frq(i), func(2,i), 2, zplus, zminus, nlayer) ! mu0*H = B
     End Do
 

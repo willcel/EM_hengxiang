@@ -1,14 +1,8 @@
 
-% pset = 1+[0:5, 5.5:0.5:9, 10:23];  % 测点的坐标，文件夹的名称
-delta_pset = 1;            % 测点之间的距离 （m）
-ns = length(pset);
-total_depth = 25; 
-nolayer = 5;
 
-
-folderbase = 'D:\willcel\测线4-0629\EM_hengxiang\';
+folderbase = 'D:\willcel\code1114车_v2\EM_hengxiang\';
 folder2 = fullfile(folderbase, 'plot');
-savefold = fullfile(folderbase, 'plot\0811v1-1.5');
+savefold = fullfile(folder2, '\1119v3-1.5');
 
 mkdir(savefold)
 cd(savefold)
@@ -16,41 +10,13 @@ cd(savefold)
 rawfileid = fullfile(folderbase, '\exp_nanjing_hengxiang\res2d.dat');
 fileid = fullfile(folder2, 'res2d.dat');
 copyfile(rawfileid, fileid)
-data = textread(fileid, '%s', 'delimiter', '\n');
-%%
-%{
-% 涓嶆厧璁板綍涓烘瘡琛?13涓?鏁板瓧锛屽疄闄呭簲璇ヤ??9涓?鍙傛暟锛?17*9
-groupFinish = floor(length(data) / 12); 
 
-para = [];
-for i = 1:groupFinish
-    index = (1:12) + (i-1)*12;
-    tmp = [];
-    for j = index
-        str = cell2mat(data(j));
-        str_array = strsplit(str);
-        num_array = str2double(str_array);
-        tmp = [tmp num_array];
-    end
-    para = [para; tmp];
-end
-%}
-groupFinish = floor(length(data) / ns);
+% data = textread(fileid, '%s', 'delimiter', '\n');
 
-para = [];
-for i = 1:groupFinish
-    index = (1:ns) + (i-1)*ns;
-    tmp = [];
-    for j = index
-        str = cell2mat(data(j));
-        str_array = strsplit(str);
-        num_array = str2double(str_array);
-        tmp = [tmp num_array];
-    end
-    para = [para; tmp];
-end
+data = load(fileid);
 
-save( fullfile(savefold,'res.mat'), "para")
+para = data;
+save( fullfile(savefold,'res.mat'), "data")
 copyfile( fullfile(folder2,'res2d.dat'), fullfile(savefold,'res2d.dat'))
 % copyfile( fullfile(folder2,'log.dat'), fullfile(savefold,'log.dat'))
 
@@ -59,7 +25,7 @@ j=1;
 for ii = 1:groupFinish
     
     tmp = para(ii,:);
-    a = reshape(tmp,9,ns);
+    a = reshape(tmp,(2*nolayer-1),ns);
     a = a';
 
     scale_factor = 100;
@@ -135,5 +101,6 @@ for ii = 1:groupFinish
     end
     saveas(gcf, fullfile(savefold,[num2str(ii),'.tif']) )
 end
-
+%%
+cd ..
 cplot_err

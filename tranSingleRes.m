@@ -2,15 +2,14 @@
 % close all
 dbstop if error
 % pset = 1+[0:5, 5.5:0.5:9, 10:23];  % 测点的坐标，文件夹的名称
-delta_pset = 1;
-
-ns = length(pset);               
-nolayer = 5;                  % 
-total_depth = 25;           % 
+% delta_pset = 1;
+% ns = length(pset);               
+% nolayer = 5;                  % 
+% total_depth = 25;           % 
 no_para = 2 * nolayer -1;
 
 
-load('D:\willcel\测线4-0629\EM_singleBP\selectAns.mat')
+load('D:\willcel\code1114车_v2\EM_singleBP\selectAns.mat')
 a = selectAns;
 
     %% 调整分区
@@ -33,8 +32,8 @@ a = selectAns;
 
 %% 写入结果
 % {
-rho_pro = a(:,1:5);
-dep_pro = a(:,6:9);
+rho_pro = a(:,1:nolayer);
+dep_pro = a(:,(nolayer+1):(2*nolayer-1));
 
 
 rho_pro1 = zeros(ns*nolayer,1);
@@ -46,7 +45,7 @@ for i=1:size(rho_pro,1)
 
         rho_pro1(j+(i-1)*size(rho_pro,2)) = rho_pro(i,j);
         
-        if(j~=5)
+        if(j~=nolayer)
             dep_pro1(j+(i-1)*size(rho_pro,2)) = dep_pro(i,j);
         else
             dep_pro1(j+(i-1)*size(rho_pro,2)) = 1;
@@ -68,8 +67,8 @@ save('dep_pro_tunnel_single.txt','dep_pro1','-ascii')
 
 %% 纯粹画图
     % 不同层之间划分，方便观察
-    depthSeparate = a(:,6:9);
-    for j = 2:4
+    depthSeparate = a(:,(nolayer+1):(2*nolayer-1));
+    for j = 2:nolayer-1
         depthSeparate(:,j) = depthSeparate(:,j-1) + depthSeparate(:,j);
     end
 
@@ -123,7 +122,7 @@ save('dep_pro_tunnel_single.txt','dep_pro1','-ascii')
     % ---------------------------------------
     figure(Position=[83.666666666667	89.666666666667	1046	600.666666666667]) 
 
-    h=pcolor(delta_pset*(xdraw_range - min(xdraw_range)),y,log10(mat'))
+    h=pcolor(delta_pset*(xdraw_range - min(xdraw_range)),y,log10(mat'));
     shading flat
     % h.EdgeColor = 'none';
 %     shading interp
@@ -135,7 +134,7 @@ save('dep_pro_tunnel_single.txt','dep_pro1','-ascii')
     set(get(h,'title'),'string','log10(\rho)');
     % title('predicted model')
     set(gca,'FontSize',18,'FontWeight','bold')
-    caxis([-4,2])
+    caxis([-4,4])
     set(gca,'ydir','reverse')
 
     for i = 1:ns
@@ -147,7 +146,7 @@ save('dep_pro_tunnel_single.txt','dep_pro1','-ascii')
     
     for i = 1:ns
         hold on
-        for k = 1:4
+        for k = 1:nolayer-1
             plot([xdraw_range(i) xdraw_range(i+1)]-1, [depthSeparate(i,k) depthSeparate(i,k)], 'r', 'LineWidth', 1)
         end
         hold off
