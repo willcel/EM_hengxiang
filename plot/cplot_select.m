@@ -6,13 +6,13 @@ dbstop if error
 % pset = 1+[0:5, 5.5:0.5:9, 10:23];  % 测点的坐标，文件夹的名称
 delta_pset = 1;               % 娴嬬偣涔嬮棿鐨勮窛绂? 锛坢锛?
 ns = length(pset);                  % 娴嬬偣鐨勪釜鏁?
-nolayer = 5;                  % 鍒掑垎鐨勫眰鏁?
-total_depth = 25;           % 鏈?澶ф繁搴? m
+% nolayer = 6;                  % 鍒掑垎鐨勫眰鏁?
+% total_depth = 50;           % 鏈?澶ф繁搴? m
 no_para = 2 * nolayer -1;
 %%
 
 %%
-interpPlot = 0;
+interpPlot = 1;
 filefolder = savefold;
 savename ='.\selectAns_Hengxiang.mat';
 
@@ -32,7 +32,7 @@ iterA = floor(line / ns);
 fclose(fileid)
 
 
-ii = 1;
+ii = 30;
 indLine = (1:ns) + (ii-1)*ns;
 a = res4(indLine, :);
 

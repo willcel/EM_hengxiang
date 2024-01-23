@@ -1,8 +1,8 @@
 
 
-folderbase = 'D:\willcel\code1114≥µ_v2\EM_hengxiang\';
+folderbase = 'D:\willcel\code0111Ã¿…Ω\EM_hengxiang\';
 folder2 = fullfile(folderbase, 'plot');
-savefold = fullfile(folder2, '\1119v3-1.5');
+savefold = fullfile(folder2, '\0111v2-1.5');
 
 mkdir(savefold)
 cd(savefold)
@@ -19,7 +19,7 @@ para = data;
 save( fullfile(savefold,'res.mat'), "data")
 copyfile( fullfile(folder2,'res2d.dat'), fullfile(savefold,'res2d.dat'))
 % copyfile( fullfile(folder2,'log.dat'), fullfile(savefold,'log.dat'))
-
+groupFinish = 30;
 %%
 j=1;
 for ii = 1:groupFinish
@@ -79,7 +79,8 @@ for ii = 1:groupFinish
     figure('Position',[10 10 1200 600])
     pcolor(delta_pset*(xdraw_range - min(xdraw_range)),y,log10(mat'))
     
-    shading flat%interp
+    shading flat%
+%     shading interp
     colormap jet
     xlabel('Measurement Line / m','FontSize',15,'FontWeight','bold')
     ylabel('Depth / m','FontSize',15,'FontWeight','bold')

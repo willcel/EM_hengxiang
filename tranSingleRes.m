@@ -9,7 +9,7 @@ dbstop if error
 no_para = 2 * nolayer -1;
 
 
-load('D:\willcel\code1114车_v2\EM_singleBP\selectAns.mat')
+load('D:\willcel\code0111汤山\EM_singleBP\selectAns.mat')
 a = selectAns;
 
     %% 调整分区
@@ -134,7 +134,7 @@ save('dep_pro_tunnel_single.txt','dep_pro1','-ascii')
     set(get(h,'title'),'string','log10(\rho)');
     % title('predicted model')
     set(gca,'FontSize',18,'FontWeight','bold')
-    caxis([-4,4])
+    caxis([-4,2])
     set(gca,'ydir','reverse')
 
     for i = 1:ns

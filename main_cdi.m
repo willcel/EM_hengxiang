@@ -25,7 +25,7 @@ dbstop if error
 % xr = 0.58;    % 中心距
 
 %% 电流、电压数据拷贝过来
-rawfolder = 'D:\willcel\code1114车_v2\EM_singleBP';
+rawfolder = 'D:\willcel\code0111汤山\EM_singleBP';
 copyfile(fullfile(rawfolder, 'vobs_20ms.txt'), '.\')
 copyfile(fullfile(rawfolder, 'point1set.txt'), '.\')
 copyfile(fullfile(rawfolder, 'point2set.txt'), '.\')

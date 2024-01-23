@@ -193,28 +193,35 @@
     write(7,*)'observation data:'
     write(7,10)Vobs
 
-    do k=1,ns-1
-        do i = 1,ntc
-            deltaVobs(i,1) = Vobs(i+(k-1)*ntc,1) - Vobs(i+k*ntc,1)
-        end do
-        temp0 = sqrt(matmul(transpose(deltaVobs),deltaVobs))
-        phi(k,1) = 1 / temp0(1,1)
-    end do
+
+    ! 0629/cexian1
+    ! 请用fortran语法写
+    ! 结构3-6不约束，需要从2-3开始到6-7
+    coef = 1.5 ! 横向约束的系数
+    bindarr = coef
+    bindarr(10:14,:) = 0.001
+
+    ! do k=1,ns-1
+    !     do i = 1,ntc
+    !         deltaVobs(i,1) = Vobs(i+(k-1)*ntc,1) - Vobs(i+k*ntc,1)
+    !     end do
+    !     temp0 = sqrt(matmul(transpose(deltaVobs),deltaVobs))
+    !     phi(k,1) = 1 / temp0(1,1)
+    ! end do
     
-    phiMax = MAXVAL(phi)
+    ! phiMax = MAXVAL(phi)
 
-    ! 横向约束的系数
-    coef = 0.001   ! 1.0 ! 横向约束的系数
-
-    do k=1,ns-1
-        rel(k,1) = phi(k,1) / phiMax
-        bindarr(k,:) = rel(k,1) * coef;
-    end do
-    write(7,*)'rel data:'
-    write(7,*)rel
-    ! print*, rel
-    ! ! print*, phiMax
-    ! print*, "hello"
+    ! ! 横向约束的系数
+    ! coef = 0.001   ! 1.0 ! 横向约束的系数
+    ! do k=1,ns-1
+    !     rel(k,1) = phi(k,1) / phiMax
+    !     bindarr(k,:) = rel(k,1) * coef;
+    ! end do
+    ! write(7,*)'rel data:'
+    ! write(7,*)rel
+    ! ! print*, rel
+    ! ! ! print*, phiMax
+    ! ! print*, "hello"
 
 
     Wp = 0
